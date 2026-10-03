@@ -15,14 +15,13 @@
 
     <style>
         :root {
-            /* درجات لون حوائط مبنى الكلية البيج الكلاسيكي الممزوجة بالفخامة الرقمية */
+            /* درجات لون حوائط مبنى الكليه الكلاسيكي الممزوجة بالفخامة الرقمية */
             --bg-color: #12100e;
             --text-color: #f3f0ea;
             --card-bg: rgba(36, 32, 27, 0.82);
-            --card-border: rgba(212, 175, 55, 0.25); /* لمسة ذهبية من إضاءة المبنى */
+            --card-border: rgba(212, 175, 55, 0.25);
             --input-bg: rgba(24, 21, 18, 0.9);
             --primary-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 50%, #cd853f 100%);
-            --accent-glow: rgba(212, 175, 55, 0.15);
         }
 
         html.light {
@@ -32,7 +31,6 @@
             --card-border: rgba(184, 134, 11, 0.3);
             --input-bg: rgba(250, 247, 240, 0.95);
             --primary-gradient: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
-            --accent-glow: rgba(184, 134, 11, 0.1);
         }
 
         * {
@@ -47,12 +45,11 @@
             align-items: center; overflow-x: hidden; position: relative;
         }
 
-        /* خلفية مبنى الكلية المتألقة مع إضاءة خافتة تبرز السلايدات */
+        /* خلفية عامة هادئة تبرز السلايدات بلون حوائط الكلية */
         .college-bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(30, 26, 21, 0.85) 0%, rgba(10, 8, 7, 0.95) 100%),
-                        url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
-            z-index: -2; opacity: 0.35;
+            background: rgba(18, 16, 14, 0.88);
+            z-index: -2;
         }
 
         #interactiveCanvas {
@@ -98,14 +95,18 @@
         }
         .btn-refresh:hover, .theme-toggle-btn:hover { border-color: #d4af37; transform: translateY(-2px); }
 
-        /* شاشة الترحيب السينمائية المستوحاة من مبنى الكلية */
+        /* شاشة الترحيب السينمائية مع فيديو مبنى الكلية في الخلفية */
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #161310 0%, #090807 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s ease;
+            overflow: hidden;
         }
-        .splash-content { text-align: center; padding: 0 20px; }
+        .splash-video-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-Index: -1; filter: brightness(0.4) contrast(1.1);
+        }
+        .splash-content { text-align: center; padding: 0 20px; z-index: 2; }
         .splash-logo-icon {
             width: 120px; height: 120px; background: var(--primary-gradient);
             border-radius: 35px; display: flex; align-items: center; justify-content: center;
@@ -121,7 +122,7 @@
             background: linear-gradient(135deg, #ffffff 20%, #e6d597 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;
         }
-        .splash-content p { color: #c4b59d; font-size: 1.15rem; margin-bottom: 40px; font-weight: 600; }
+        .splash-content p { color: #e2d4bc; font-size: 1.15rem; margin-bottom: 40px; font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
         .btn-enter {
             background: var(--primary-gradient); color: #fff; border: none;
             padding: 16px 55px; border-radius: 50px; font-weight: 800; font-size: 1.15rem;
@@ -183,7 +184,7 @@
         .search-box input:focus { border-color: #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
         .search-box i { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #d4af37; font-size: 1.2rem; }
 
-        /* تصميم السلايدات بلون حوائط المبنى الكلاسيكي مع خاصية الفتح لواجهة الدكتور */
+        /* تصميم السلايدات بلون حوائط الكلية الكلاسيكي مع خاصية الفتح لواجهة الدكتور */
         .section-slide {
             background: var(--card-bg); backdrop-filter: blur(25px);
             border: 1px solid var(--card-border); border-radius: 24px;
@@ -290,11 +291,15 @@
         <span id="toastMessage">تم التحديث بنجاح!</span>
     </div>
 
-    <!-- خلفية مبنى الكلية والأضواء التفاعلية -->
+    <!-- الخلفية وأضواء التفاعل الهادئة بلون الكلية -->
     <div class="college-bg-overlay"></div>
     <canvas id="interactiveCanvas"></canvas>
 
+    <!-- شاشة الترحيب مع فيديو الكلية المتحرك في الخلفية -->
     <div id="splashScreen">
+        <video autoplay muted loop playsinline class="splash-video-bg">
+            <source src="13241.mp4" type="video/mp4">
+        </video>
         <div class="splash-content">
             <div class="splash-logo-icon"><i class="fa-solid fa-university"></i></div>
             <h2>كلية الحاسبات وعلوم البيانات</h2>
@@ -305,7 +310,7 @@
 
     <div id="mainApp" style="opacity: 0; visibility: hidden;">
         <div class="top-bar">
-            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#d4af37;"></i> الزيارات النشطة: <span id="visitCount">2,910</span></div>
+            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#d4af37;"></i> الزيارات النشطة: <span id="visitCount">3,120</span></div>
             <div class="actions-top">
                 <button class="btn-refresh" onclick="loadFilesFromDatabase()"><i class="fa-solid fa-rotate"></i> تحديث</button>
                 <button class="theme-toggle-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
@@ -334,7 +339,7 @@
                 </div>
             </div>
 
-            <!-- حاوية السلايدات (كل سلايد يفتح واجهة الدكتور عند الضغط عليه) -->
+            <!-- حاوية السلايدات -->
             <div id="slidesContainer"></div>
         </div>
 
@@ -381,7 +386,6 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
-        // مواد الدفعة
         const subjects = [
             { id: 'linear_algebra', name: 'د/ محمد وليد', desc: 'Linear Algebra', icon: 'fa-square-root-variable' },
             { id: 'probability', name: 'د/ أسماء القاضي', desc: 'Probability', icon: 'fa-chart-pie' },
@@ -392,7 +396,6 @@
             { id: 'critical_thinking', name: 'Critical Thinking', desc: 'التفكير النقدي', icon: 'fa-brain' }
         ];
 
-        // سكريبت الخلفية التفاعلية الهادئة
         const canvas = document.getElementById('interactiveCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
