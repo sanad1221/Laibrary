@@ -15,35 +15,39 @@
 
     <style>
         :root {
-            --bg-color: #050b14;
+            --bg-color: #030712;
             --text-color: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --input-bg: rgba(255, 255, 255, 0.04);
-            --bubble-color: rgba(129, 140, 248, 0.15);
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(99, 102, 241, 0.2);
+            --input-bg: rgba(15, 23, 42, 0.85);
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
         }
 
         html.light {
             --bg-color: #f1f5f9;
             --text-color: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-border: rgba(0, 0, 0, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(99, 102, 241, 0.25);
             --input-bg: rgba(255, 255, 255, 0.95);
-            --bubble-color: rgba(99, 102, 241, 0.08);
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body {
             background-color: var(--bg-color); color: var(--text-color);
             min-height: 100vh; display: flex; flex-direction: column;
             align-items: center; overflow-x: hidden; position: relative;
+        }
+
+        /* خلفية كانفاس تفاعلية متحركة */
+        #interactiveCanvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
         }
 
         #notificationToast {
@@ -57,48 +61,32 @@
         }
         #notificationToast.show { transform: translateX(0); }
 
-        .math-bubbles-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: -1; overflow: hidden;
-        }
-        .math-bubble {
-            position: absolute; background: var(--card-bg); backdrop-filter: blur(8px);
-            border: 1px solid var(--card-border);
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; animation: floatBubble linear infinite;
-        }
-        @keyframes floatBubble {
-            0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
-            20% { opacity: 0.5; } 80% { opacity: 0.5; }
-            100% { transform: translateY(-10vh) rotate(360deg) scale(1.3); opacity: 0; }
-        }
-
         .top-bar {
             width: 90%; max-width: 1100px; display: flex;
             justify-content: space-between; align-items: center;
-            margin-top: 25px; gap: 15px; flex-wrap: wrap;
+            margin-top: 25px; gap: 15px; flex-wrap: wrap; z-index: 10;
         }
         .stats-badge {
             background: var(--card-bg); backdrop-filter: blur(20px);
             border: 1px solid var(--card-border); padding: 10px 22px;
             border-radius: 50px; font-size: 0.88rem; display: flex; align-items: center; gap: 10px;
-            color: #818cf8; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            color: #818cf8; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .actions-top { display: flex; gap: 12px; align-items: center; }
-        .btn-refresh {
+        .btn-refresh, .theme-toggle-btn {
             background: var(--card-bg); border: 1px solid var(--card-border);
-            color: var(--text-color); padding: 10px 20px; border-radius: 50px;
-            font-size: 0.88rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); backdrop-filter: blur(20px);
+            color: var(--text-color); cursor: pointer; backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .btn-refresh {
+            padding: 10px 20px; border-radius: 50px; font-size: 0.88rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .theme-toggle-btn {
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
         }
         .btn-refresh:hover, .theme-toggle-btn:hover { border-color: #818cf8; transform: translateY(-2px); }
-
-        .theme-toggle-btn {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            color: var(--text-color); width: 45px; height: 45px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); backdrop-filter: blur(20px);
-        }
 
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -132,14 +120,14 @@
 
         #mainApp {
             opacity: 0; visibility: hidden; transition: opacity 1s ease;
-            width: 100%; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            width: 100%; display: flex; flex-direction: column; align-items: center; min-height: 100vh; z-index: 10;
         }
         header { text-align: center; margin: 35px 20px 25px; }
         .badge-doc {
             display: inline-flex; align-items: center; gap: 10px; padding: 10px 28px;
             background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--card-border);
             color: #818cf8; border-radius: 50px; font-size: 0.95rem; font-weight: 700; margin-bottom: 18px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .glow-name {
             font-size: 3.2rem; font-weight: 900;
@@ -159,7 +147,7 @@
         .notice-board {
             background: var(--card-bg); backdrop-filter: blur(25px);
             border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 24px;
-            padding: 30px; margin-bottom: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 30px; margin-bottom: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             position: relative; overflow: hidden;
         }
         .notice-board::before {
@@ -174,60 +162,64 @@
         }
         .notice-content { color: var(--text-color); font-size: 1.1rem; line-height: 1.8; opacity: 0.95; font-weight: 500; }
 
-        .controls-bar { display: flex; gap: 18px; margin-bottom: 35px; flex-wrap: wrap; }
-        .search-box { flex: 1; position: relative; min-width: 280px; }
+        .controls-bar { display: flex; gap: 18px; margin-bottom: 35px; }
+        .search-box { flex: 1; position: relative; }
         .search-box input {
             width: 100%; padding: 18px 22px 18px 55px; background: var(--input-bg);
             backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px;
-            color: var(--text-color); font-size: 1.05rem; outline: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            color: var(--text-color); font-size: 1.05rem; outline: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .search-box input:focus { border-color: #818cf8; box-shadow: 0 0 20px rgba(129, 140, 248, 0.25); }
+        .search-box input:focus { border-color: #818cf8; box-shadow: 0 0 20px rgba(129, 140, 248, 0.3); }
         .search-box i { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #818cf8; font-size: 1.2rem; }
 
-        .btn-upload {
-            background: var(--primary-gradient); color: white; border: none;
-            padding: 0 35px; border-radius: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 12px; white-space: nowrap;
-            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4); font-size: 1.05rem;
-        }
-        .btn-upload:hover { transform: translateY(-3px); box-shadow: 0 15px 45px rgba(99, 102, 241, 0.6); }
-
-        /* تصميم السلايدات (المواد الدراسية تحت بعض) */
+        /* تصميم السلايدات التفاعلية القابلة للفتح والطي */
         .section-slide {
             background: var(--card-bg); backdrop-filter: blur(25px);
             border: 1px solid var(--card-border); border-radius: 24px;
-            padding: 28px; margin-bottom: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            position: relative; overflow: hidden;
+            margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .section-slide:hover { border-color: rgba(129, 140, 248, 0.5); }
+        
         .section-slide-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 15px; flex-wrap: wrap; gap: 15px;
+            padding: 24px 30px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none; flex-wrap: wrap; gap: 15px;
         }
         .slide-title-area h3 {
-            font-size: 1.35rem; font-weight: 800; color: #818cf8;
-            display: flex; align-items: center; gap: 12px; margin-bottom: 4px;
+            font-size: 1.3rem; font-weight: 800; color: #818cf8;
+            display: flex; align-items: center; gap: 14px; margin-bottom: 4px;
         }
-        .slide-title-area span { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
+        .slide-title-area span { font-size: 0.9rem; color: #94a3b8; font-weight: 600; padding-right: 36px; }
         
+        .slide-header-actions { display: flex; align-items: center; gap: 15px; }
         .btn-add-to-slide {
             background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3);
             color: #818cf8; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 0.9rem;
             cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
         }
         .btn-add-to-slide:hover { background: #6366f1; color: white; transform: translateY(-2px); }
+        .slide-arrow { color: #818cf8; font-size: 1.1rem; transition: transform 0.3s ease; }
+        .section-slide.active .slide-arrow { transform: rotate(180deg); }
+
+        /* محتوى السلايد الداخلي (مخفي افتراضياً ويفتح بسلاسة) */
+        .slide-content-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 30px; background: rgba(0, 0, 0, 0.1); border-top: 1px solid transparent;
+        }
+        .section-slide.active .slide-content-body {
+            max-height: 2000px; padding: 25px 30px 30px;
+            border-top: 1px solid var(--card-border);
+        }
 
         .files-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 
         .luxury-card {
-            background: var(--card-bg); backdrop-filter: blur(25px);
-            border: 1px solid var(--card-border); padding: 25px; border-radius: 20px;
-            color: var(--text-color); display: flex; flex-direction: column; justify-content: space-between; position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: all 0.3s ease;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            padding: 22px; border-radius: 20px; color: var(--text-color);
+            display: flex; flex-direction: column; justify-content: space-between; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: all 0.3s ease;
         }
-        .luxury-card:hover {
-            transform: translateY(-5px); border-color: rgba(129, 140, 248, 0.4);
-            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.15);
-        }
+        .luxury-card:hover { transform: translateY(-5px); border-color: rgba(129, 140, 248, 0.5); }
         .btn-delete-card {
             position: absolute; top: 15px; left: 15px; background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; width: 32px; height: 32px;
@@ -258,26 +250,26 @@
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(10px);
+            background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(10px);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
         .modal-box {
             background: var(--bg-color); border: 1px solid var(--card-border);
             padding: 40px; border-radius: 26px; width: 90%; max-width: 450px; color: var(--text-color);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
         }
         .modal-box h3 { margin-bottom: 22px; font-size: 1.4rem; font-weight: 800; color: #818cf8; }
-        .modal-box select, .modal-box input, .modal-box textarea {
+        .modal-box input, .modal-box textarea {
             width: 100%; padding: 16px; border-radius: 14px; background: var(--input-bg);
             border: 1px solid var(--card-border); color: var(--text-color); margin-bottom: 20px; outline: none; font-size: 1rem;
         }
-        .modal-box select:focus, .modal-box input:focus, .modal-box textarea:focus { border-color: #818cf8; }
+        .modal-box input:focus, .modal-box textarea:focus { border-color: #818cf8; }
         .modal-buttons { display: flex; gap: 14px; }
         .modal-btn { flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 800; cursor: pointer; font-size: 1rem; }
         .btn-confirm { background: var(--primary-gradient); color: white; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); }
         .btn-close { background: rgba(255,255,255,0.08); color: var(--text-color); }
 
-        footer { margin-top: auto; padding: 35px; text-align: center; color: #64748b; font-size: 0.95rem; font-weight: 600; }
+        footer { margin-top: auto; padding: 35px; text-align: center; color: #64748b; font-size: 0.95rem; font-weight: 600; z-index: 10; }
     </style>
 </head>
 <body>
@@ -287,7 +279,8 @@
         <span id="toastMessage">تم التحديث بنجاح!</span>
     </div>
 
-    <div class="math-bubbles-container" id="mathBubbles"></div>
+    <!-- كانفاس الخلفية التفاعلية -->
+    <canvas id="interactiveCanvas"></canvas>
 
     <div id="splashScreen">
         <div class="splash-content">
@@ -300,7 +293,7 @@
 
     <div id="mainApp" style="opacity: 0; visibility: hidden;">
         <div class="top-bar">
-            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#818cf8;"></i> الزيارات: <span id="visitCount">2,140</span></div>
+            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#818cf8;"></i> الزيارات النشطة: <span id="visitCount">2,480</span></div>
             <div class="actions-top">
                 <button class="btn-refresh" onclick="loadFilesFromDatabase()"><i class="fa-solid fa-rotate"></i> تحديث</button>
                 <button class="theme-toggle-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
@@ -310,7 +303,7 @@
         <header>
             <div class="badge-doc"><i class="fa-solid fa-laptop-code"></i> Faculty of Computers & Data Science</div>
             <h1 class="glow-name">منصة سنة أولى</h1>
-            <p>تصفح محاضرات مواد وريادة الدكاترة بكل سهولة</p>
+            <p>اضغط على أي مادة لاستعراض المحاضرات والملفات الدراسية</p>
         </header>
 
         <div class="container">
@@ -329,16 +322,14 @@
                 </div>
             </div>
 
-            <!-- حاوية السلايدات (المواد تحت بعض) -->
-            <div id="slidesContainer">
-                <!-- سيتم توليد السلايدات ديناميكياً هنا -->
-            </div>
+            <!-- حاوية السلايدات -->
+            <div id="slidesContainer"></div>
         </div>
 
         <footer><p>Developed by Gasser © 2026</p></footer>
     </div>
 
-    <!-- نافذة إضافة الملفات السريعة -->
+    <!-- نافذة إضافة الملفات -->
     <div class="modal-overlay" id="categoryModal">
         <div class="modal-box">
             <h3 id="modalTitle">إضافة ملف جديد</h3>
@@ -378,7 +369,7 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
-        // مواد الدفعة والسلايدات المطلوبة
+        // مواد الدفعة
         const subjects = [
             { id: 'linear_algebra', name: 'د/ محمد وليد', desc: 'Linear Algebra', icon: 'fa-square-root-variable' },
             { id: 'probability', name: 'د/ أسماء القاضي', desc: 'Probability', icon: 'fa-chart-pie' },
@@ -389,25 +380,88 @@
             { id: 'critical_thinking', name: 'Critical Thinking', desc: 'التفكير النقدي', icon: 'fa-brain' }
         ];
 
-        // خلفية الفقاقيع الهادئة بدون رموز معقدة
-        const container = document.getElementById('mathBubbles');
-        for (let i = 0; i < 18; i++) {
-            let bubble = document.createElement('div');
-            bubble.className = 'math-bubble';
-            let size = Math.floor(Math.random() * 40) + 20;
-            bubble.style.width = size + 'px'; bubble.style.height = size + 'px';
-            bubble.style.left = Math.random() * 100 + 'vw';
-            bubble.style.animationDuration = (Math.random() * 15 + 10) + 's';
-            container.appendChild(bubble);
+        // سكريبت الخلفية التفاعلية (Canvas Particles & Interactive Lines)
+        const canvas = document.getElementById('interactiveCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 120 };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.radius = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+                if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+            }
+            draw() {
+                ctx.fillStyle = document.documentElement.classList.contains('light') ? 'rgba(99, 102, 241, 0.3)' : 'rgba(129, 140, 248, 0.4)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            let count = Math.floor((canvas.width * canvas.height) / 12000);
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+        }
+        initParticles();
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // ربط الجزيئات بالخطوط التفاعلية بالقرب من الماوس
+                if (mouse.x !== null && mouse.y !== null) {
+                    let dx = particles[i].x - mouse.x;
+                    let dy = particles[i].y - mouse.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < mouse.radius) {
+                        ctx.strokeStyle = document.documentElement.classList.contains('light') ? `rgba(99, 102, 241, ${0.2 * (1 - dist/mouse.radius)})` : `rgba(129, 140, 248, ${0.3 * (1 - dist/mouse.radius)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
 
         function enterApp() {
             const splash = document.getElementById('splashScreen');
             const main = document.getElementById('mainApp');
-            
             splash.style.opacity = '0';
             splash.style.visibility = 'hidden';
-            
             main.style.opacity = '1';
             main.style.visibility = 'visible';
             
@@ -416,6 +470,7 @@
             loadNoticeFromDatabase();
         }
 
+        // بناء السلايدات مع خاصية الفتح والطي عند النقر
         function buildSlidesStructure() {
             let container = document.getElementById('slidesContainer');
             container.innerHTML = "";
@@ -425,21 +480,32 @@
                 slide.className = 'section-slide';
                 slide.id = 'slide_' + sub.id;
                 slide.innerHTML = `
-                    <div class="section-slide-header">
+                    <div class="section-slide-header" onclick="toggleSlide('${sub.id}')">
                         <div class="slide-title-area">
                             <h3><i class="fa-solid ${sub.icon}"></i> ${sub.name}</h3>
                             <span>${sub.desc}</span>
                         </div>
-                        <button class="btn-add-to-slide" onclick="openUploadModal('${sub.id}', '${sub.name} - ${sub.desc}')">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> إضافة PDF للمادة
-                        </button>
+                        <div class="slide-header-actions" onclick="event.stopPropagation()">
+                            <button class="btn-add-to-slide" onclick="openUploadModal('${sub.id}', '${sub.name} - ${sub.desc}')">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> إضافة PDF
+                            </button>
+                            <i class="fa-solid fa-chevron-down slide-arrow" id="arrow_${sub.id}"></i>
+                        </div>
                     </div>
-                    <div class="files-grid" id="grid_${sub.id}">
-                        <p style="color:#94a3b8; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>
+                    <div class="slide-content-body">
+                        <div class="files-grid" id="grid_${sub.id}">
+                            <p style="color:#94a3b8; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>
+                        </div>
                     </div>
                 `;
                 container.appendChild(slide);
             });
+        }
+
+        // دالة فتح وغلق السلايد بسلاسة
+        function toggleSlide(subId) {
+            let slide = document.getElementById('slide_' + subId);
+            slide.classList.toggle('active');
         }
 
         function showNotification(msg) {
@@ -475,7 +541,7 @@
             if (newText) {
                 rtdb.ref('settings/notice').set(newText).then(() => {
                     closeNoticeModal();
-                    showNotification("تم تحديث الإعلان بنجاح لجميع الطلاب!");
+                    showNotification("تم تحديث الإعلان بنجاح!");
                 });
             }
         }
@@ -484,8 +550,7 @@
             if (url.includes('drive.google.com')) {
                 let fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
                 if (fileIdMatch && fileIdMatch[1]) {
-                    let fileId = fileIdMatch[1];
-                    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+                    return `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`;
                 }
             }
             return url;
@@ -493,7 +558,6 @@
 
         function loadFilesFromDatabase() {
             rtdb.ref('files').on('value', (snapshot) => {
-                // تفريغ الكريدات الحالية أولاً
                 subjects.forEach(sub => {
                     let grid = document.getElementById('grid_' + sub.id);
                     if(grid) grid.innerHTML = `<p style="color:#94a3b8; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>`;
@@ -507,7 +571,6 @@
                     let targetGrid = document.getElementById('grid_' + file.category);
                     
                     if (targetGrid) {
-                        // لو كانت الرسالة الافتراضية موجودة، امسحها
                         if (targetGrid.innerHTML.includes('لا توجد ملفات')) {
                             targetGrid.innerHTML = "";
                         }
@@ -553,12 +616,12 @@
             let category = document.getElementById('targetCategory').value;
 
             if (!name || !url) {
-                alert("الرجاء إدخال اسم المحاضرة ورابط درايف!");
+                alert("الرجاء إدخال اسم المحاضرة والرابط!");
                 return;
             }
 
             closeCategoryModal();
-            showNotification("جاري نشر الملف للطلاب...");
+            showNotification("جاري نشر الملف...");
 
             let newFileRef = rtdb.ref('files').push();
             newFileRef.set({
@@ -568,9 +631,9 @@
                 downloads: 0,
                 createdAt: Date.now()
             }).then(() => {
-                showNotification("تم نشر الملف بنجاح في المادة المحددة!");
+                showNotification("تم نشر الملف بنجاح!");
             }).catch((error) => {
-                alert("خطأ في النشر: " + error.message);
+                alert("خطأ: " + error.message);
             });
         }
 
@@ -596,6 +659,7 @@
             } else {
                 html.classList.remove('light'); html.classList.add('dark'); icon.className = 'fa-solid fa-moon';
             }
+            initParticles();
         }
 
         function searchFiles() {
