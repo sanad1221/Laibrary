@@ -15,21 +15,24 @@
 
     <style>
         :root {
-            --bg-color: #030712;
-            --text-color: #f8fafc;
-            --card-bg: rgba(15, 23, 42, 0.75);
-            --card-border: rgba(99, 102, 241, 0.2);
-            --input-bg: rgba(15, 23, 42, 0.85);
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            /* درجات لون حوائط مبنى الكلية البيج الكلاسيكي الممزوجة بالفخامة الرقمية */
+            --bg-color: #12100e;
+            --text-color: #f3f0ea;
+            --card-bg: rgba(36, 32, 27, 0.82);
+            --card-border: rgba(212, 175, 55, 0.25); /* لمسة ذهبية من إضاءة المبنى */
+            --input-bg: rgba(24, 21, 18, 0.9);
+            --primary-gradient: linear-gradient(135deg, #d4af37 0%, #b8860b 50%, #cd853f 100%);
+            --accent-glow: rgba(212, 175, 55, 0.15);
         }
 
         html.light {
-            --bg-color: #f1f5f9;
-            --text-color: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(99, 102, 241, 0.25);
-            --input-bg: rgba(255, 255, 255, 0.95);
-            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+            --bg-color: #f7f4ed;
+            --text-color: #2b261f;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --card-border: rgba(184, 134, 11, 0.3);
+            --input-bg: rgba(250, 247, 240, 0.95);
+            --primary-gradient: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            --accent-glow: rgba(184, 134, 11, 0.1);
         }
 
         * {
@@ -44,7 +47,14 @@
             align-items: center; overflow-x: hidden; position: relative;
         }
 
-        /* خلفية كانفاس تفاعلية متحركة */
+        /* خلفية مبنى الكلية المتألقة مع إضاءة خافتة تبرز السلايدات */
+        .college-bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(30, 26, 21, 0.85) 0%, rgba(10, 8, 7, 0.95) 100%),
+                        url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920&auto=format&fit=crop') no-repeat center center/cover;
+            z-index: -2; opacity: 0.35;
+        }
+
         #interactiveCanvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: -1;
@@ -53,8 +63,8 @@
         #notificationToast {
             position: fixed; top: 25px; right: 25px;
             background: var(--primary-gradient);
-            color: white; padding: 16px 28px; border-radius: 18px;
-            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+            color: #fff; padding: 16px 28px; border-radius: 18px;
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
             display: flex; align-items: center; gap: 14px; z-index: 99999;
             transform: translateX(130%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);
@@ -70,7 +80,7 @@
             background: var(--card-bg); backdrop-filter: blur(20px);
             border: 1px solid var(--card-border); padding: 10px 22px;
             border-radius: 50px; font-size: 0.88rem; display: flex; align-items: center; gap: 10px;
-            color: #818cf8; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: #d4af37; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .actions-top { display: flex; gap: 12px; align-items: center; }
         .btn-refresh, .theme-toggle-btn {
@@ -86,35 +96,36 @@
             width: 45px; height: 45px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
         }
-        .btn-refresh:hover, .theme-toggle-btn:hover { border-color: #818cf8; transform: translateY(-2px); }
+        .btn-refresh:hover, .theme-toggle-btn:hover { border-color: #d4af37; transform: translateY(-2px); }
 
+        /* شاشة الترحيب السينمائية المستوحاة من مبنى الكلية */
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
+            background: linear-gradient(135deg, #161310 0%, #090807 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s ease;
         }
         .splash-content { text-align: center; padding: 0 20px; }
         .splash-logo-icon {
-            width: 110px; height: 110px; background: var(--primary-gradient);
-            border-radius: 32px; display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; color: white; margin: 0 auto 25px;
-            box-shadow: 0 0 60px rgba(99, 102, 241, 0.6); animation: pulseLogo 2s infinite alternate;
+            width: 120px; height: 120px; background: var(--primary-gradient);
+            border-radius: 35px; display: flex; align-items: center; justify-content: center;
+            font-size: 3.2rem; color: #fff; margin: 0 auto 25px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.4); animation: pulseLogo 2s infinite alternate;
         }
         @keyframes pulseLogo {
-            0% { transform: scale(1); box-shadow: 0 0 30px rgba(99, 102, 241, 0.4); }
-            100% { transform: scale(1.08); box-shadow: 0 0 70px rgba(168, 85, 247, 0.8); }
+            0% { transform: scale(1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+            100% { transform: scale(1.06); box-shadow: 0 0 60px rgba(212, 175, 55, 0.6); }
         }
         .splash-content h2 {
             font-family: 'Outfit', sans-serif; font-size: 2.8rem; font-weight: 900;
-            background: linear-gradient(135deg, #ffffff 20%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #ffffff 20%, #e6d597 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;
         }
-        .splash-content p { color: #94a3b8; font-size: 1.15rem; margin-bottom: 40px; font-weight: 600; }
+        .splash-content p { color: #c4b59d; font-size: 1.15rem; margin-bottom: 40px; font-weight: 600; }
         .btn-enter {
-            background: var(--primary-gradient); color: white; border: none;
+            background: var(--primary-gradient); color: #fff; border: none;
             padding: 16px 55px; border-radius: 50px; font-weight: 800; font-size: 1.15rem;
-            cursor: pointer; box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5); transition: all 0.3s ease;
+            cursor: pointer; box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4); transition: all 0.3s ease;
         }
         .btn-enter:hover { transform: translateY(-5px) scale(1.05); }
 
@@ -126,27 +137,27 @@
         .badge-doc {
             display: inline-flex; align-items: center; gap: 10px; padding: 10px 28px;
             background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--card-border);
-            color: #818cf8; border-radius: 50px; font-size: 0.95rem; font-weight: 700; margin-bottom: 18px;
+            color: #d4af37; border-radius: 50px; font-size: 0.95rem; font-weight: 700; margin-bottom: 18px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .glow-name {
             font-size: 3.2rem; font-weight: 900;
-            background: linear-gradient(135deg, #ffffff 20%, #c7d2fe 100%);
+            background: linear-gradient(135deg, #ffffff 20%, #dfcb84 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 14px; font-family: 'Outfit', sans-serif;
             animation: glowingText 3s ease-in-out infinite alternate;
         }
         @keyframes glowingText {
-            0% { text-shadow: 0 0 15px rgba(129, 140, 248, 0.3); }
-            100% { text-shadow: 0 0 35px rgba(129, 140, 248, 0.8); }
+            0% { text-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+            100% { text-shadow: 0 0 35px rgba(212, 175, 55, 0.6); }
         }
-        header p { color: #94a3b8; font-size: 1.2rem; font-weight: 600; }
+        header p { color: #b8a993; font-size: 1.2rem; font-weight: 600; }
 
         .container { width: 90%; max-width: 1100px; margin-bottom: 60px; }
 
         .notice-board {
             background: var(--card-bg); backdrop-filter: blur(25px);
-            border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 24px;
+            border: 1px solid var(--card-border); border-radius: 24px;
             padding: 30px; margin-bottom: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             position: relative; overflow: hidden;
         }
@@ -155,10 +166,10 @@
             background: var(--primary-gradient);
         }
         .notice-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .notice-title { display: flex; align-items: center; gap: 12px; color: #818cf8; font-weight: 800; font-size: 1.2rem; }
+        .notice-title { display: flex; align-items: center; gap: 12px; color: #d4af37; font-weight: 800; font-size: 1.2rem; }
         .btn-edit-notice {
-            background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3);
-            color: #818cf8; padding: 8px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37; padding: 8px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
         }
         .notice-content { color: var(--text-color); font-size: 1.1rem; line-height: 1.8; opacity: 0.95; font-weight: 500; }
 
@@ -169,45 +180,45 @@
             backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 16px;
             color: var(--text-color); font-size: 1.05rem; outline: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .search-box input:focus { border-color: #818cf8; box-shadow: 0 0 20px rgba(129, 140, 248, 0.3); }
-        .search-box i { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #818cf8; font-size: 1.2rem; }
+        .search-box input:focus { border-color: #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+        .search-box i { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: #d4af37; font-size: 1.2rem; }
 
-        /* تصميم السلايدات التفاعلية القابلة للفتح والطي */
+        /* تصميم السلايدات بلون حوائط المبنى الكلاسيكي مع خاصية الفتح لواجهة الدكتور */
         .section-slide {
             background: var(--card-bg); backdrop-filter: blur(25px);
             border: 1px solid var(--card-border); border-radius: 24px;
             margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.15);
             overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .section-slide:hover { border-color: rgba(129, 140, 248, 0.5); }
+        .section-slide:hover { border-color: rgba(212, 175, 55, 0.6); transform: translateY(-3px); }
         
         .section-slide-header {
             padding: 24px 30px; display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; user-select: none; flex-wrap: wrap; gap: 15px;
         }
         .slide-title-area h3 {
-            font-size: 1.3rem; font-weight: 800; color: #818cf8;
+            font-size: 1.3rem; font-weight: 800; color: #d4af37;
             display: flex; align-items: center; gap: 14px; margin-bottom: 4px;
         }
-        .slide-title-area span { font-size: 0.9rem; color: #94a3b8; font-weight: 600; padding-right: 36px; }
+        .slide-title-area span { font-size: 0.9rem; color: #b8a993; font-weight: 600; padding-right: 36px; }
         
         .slide-header-actions { display: flex; align-items: center; gap: 15px; }
         .btn-add-to-slide {
-            background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3);
-            color: #818cf8; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 0.9rem;
+            background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 0.9rem;
             cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
         }
-        .btn-add-to-slide:hover { background: #6366f1; color: white; transform: translateY(-2px); }
-        .slide-arrow { color: #818cf8; font-size: 1.1rem; transition: transform 0.3s ease; }
+        .btn-add-to-slide:hover { background: #d4af37; color: #12100e; transform: translateY(-2px); }
+        .slide-arrow { color: #d4af37; font-size: 1.1rem; transition: transform 0.3s ease; }
         .section-slide.active .slide-arrow { transform: rotate(180deg); }
 
-        /* محتوى السلايد الداخلي (مخفي افتراضياً ويفتح بسلاسة) */
+        /* واجهة الدكتور الداخلية (تفتح بسلاسة عند النقر) */
         .slide-content-body {
             max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0 30px; background: rgba(0, 0, 0, 0.1); border-top: 1px solid transparent;
+            padding: 0 30px; background: rgba(0, 0, 0, 0.15); border-top: 1px solid transparent;
         }
         .section-slide.active .slide-content-body {
-            max-height: 2000px; padding: 25px 30px 30px;
+            max-height: 2500px; padding: 25px 30px 30px;
             border-top: 1px solid var(--card-border);
         }
 
@@ -219,7 +230,7 @@
             display: flex; flex-direction: column; justify-content: space-between; position: relative;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: all 0.3s ease;
         }
-        .luxury-card:hover { transform: translateY(-5px); border-color: rgba(129, 140, 248, 0.5); }
+        .luxury-card:hover { transform: translateY(-5px); border-color: rgba(212, 175, 55, 0.6); }
         .btn-delete-card {
             position: absolute; top: 15px; left: 15px; background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; width: 32px; height: 32px;
@@ -230,12 +241,12 @@
 
         .file-info { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; margin-top: 5px; }
         .file-icon {
-            background: var(--primary-gradient); color: white; width: 50px; height: 50px;
+            background: var(--primary-gradient); color: #fff; width: 50px; height: 50px;
             border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
         .file-details h4 { font-size: 1.05rem; font-weight: 800; margin-bottom: 5px; padding-left: 20px; line-height: 1.4; }
-        .file-details span { font-size: 0.8rem; color: #94a3b8; display: block; font-weight: 600; }
+        .file-details span { font-size: 0.8rem; color: #b8a993; display: block; font-weight: 600; }
         
         .file-actions { display: flex; gap: 10px; }
         .btn {
@@ -243,14 +254,14 @@
             font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
             transition: all 0.3s ease;
         }
-        .btn-download { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
-        .btn-download:hover { background: #6366f1; color: white; }
+        .btn-download { background: rgba(212, 175, 55, 0.15); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .btn-download:hover { background: #d4af37; color: #12100e; }
         .btn-view { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--card-border); }
         .btn-view:hover { background: rgba(255,255,255,0.1); }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(10px);
+            background: rgba(10, 8, 7, 0.85); backdrop-filter: blur(10px);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
         .modal-box {
@@ -258,18 +269,18 @@
             padding: 40px; border-radius: 26px; width: 90%; max-width: 450px; color: var(--text-color);
             box-shadow: 0 25px 60px rgba(0,0,0,0.6);
         }
-        .modal-box h3 { margin-bottom: 22px; font-size: 1.4rem; font-weight: 800; color: #818cf8; }
+        .modal-box h3 { margin-bottom: 22px; font-size: 1.4rem; font-weight: 800; color: #d4af37; }
         .modal-box input, .modal-box textarea {
             width: 100%; padding: 16px; border-radius: 14px; background: var(--input-bg);
             border: 1px solid var(--card-border); color: var(--text-color); margin-bottom: 20px; outline: none; font-size: 1rem;
         }
-        .modal-box input:focus, .modal-box textarea:focus { border-color: #818cf8; }
+        .modal-box input:focus, .modal-box textarea:focus { border-color: #d4af37; }
         .modal-buttons { display: flex; gap: 14px; }
         .modal-btn { flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 800; cursor: pointer; font-size: 1rem; }
-        .btn-confirm { background: var(--primary-gradient); color: white; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); }
+        .btn-confirm { background: var(--primary-gradient); color: #fff; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4); }
         .btn-close { background: rgba(255,255,255,0.08); color: var(--text-color); }
 
-        footer { margin-top: auto; padding: 35px; text-align: center; color: #64748b; font-size: 0.95rem; font-weight: 600; z-index: 10; }
+        footer { margin-top: auto; padding: 35px; text-align: center; color: #8c7d6b; font-size: 0.95rem; font-weight: 600; z-index: 10; }
     </style>
 </head>
 <body>
@@ -279,21 +290,22 @@
         <span id="toastMessage">تم التحديث بنجاح!</span>
     </div>
 
-    <!-- كانفاس الخلفية التفاعلية -->
+    <!-- خلفية مبنى الكلية والأضواء التفاعلية -->
+    <div class="college-bg-overlay"></div>
     <canvas id="interactiveCanvas"></canvas>
 
     <div id="splashScreen">
         <div class="splash-content">
-            <div class="splash-logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-            <h2>طلاب فرقة سنة أولى</h2>
-            <p>كلية الحاسبات وعلوم البيانات - جامعة الإسكندرية</p>
+            <div class="splash-logo-icon"><i class="fa-solid fa-university"></i></div>
+            <h2>كلية الحاسبات وعلوم البيانات</h2>
+            <p>جامعة الإسكندرية - دفعة سنة أولى</p>
             <button class="btn-enter" onclick="enterApp()"><i class="fa-solid fa-arrow-right-to-bracket"></i> دخول المنصة</button>
         </div>
     </div>
 
     <div id="mainApp" style="opacity: 0; visibility: hidden;">
         <div class="top-bar">
-            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#818cf8;"></i> الزيارات النشطة: <span id="visitCount">2,480</span></div>
+            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#d4af37;"></i> الزيارات النشطة: <span id="visitCount">2,910</span></div>
             <div class="actions-top">
                 <button class="btn-refresh" onclick="loadFilesFromDatabase()"><i class="fa-solid fa-rotate"></i> تحديث</button>
                 <button class="theme-toggle-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
@@ -301,9 +313,9 @@
         </div>
 
         <header>
-            <div class="badge-doc"><i class="fa-solid fa-laptop-code"></i> Faculty of Computers & Data Science</div>
-            <h1 class="glow-name">منصة سنة أولى</h1>
-            <p>اضغط على أي مادة لاستعراض المحاضرات والملفات الدراسية</p>
+            <div class="badge-doc"><i class="fa-solid fa-graduation-cap"></i> Faculty of Computers & Data Science</div>
+            <h1 class="glow-name">منصة طلاب سنة أولى</h1>
+            <p>اضغط على السلايد لاستعراض واجهة الدكتور ومحاضرات المادة</p>
         </header>
 
         <div class="container">
@@ -322,7 +334,7 @@
                 </div>
             </div>
 
-            <!-- حاوية السلايدات -->
+            <!-- حاوية السلايدات (كل سلايد يفتح واجهة الدكتور عند الضغط عليه) -->
             <div id="slidesContainer"></div>
         </div>
 
@@ -380,7 +392,7 @@
             { id: 'critical_thinking', name: 'Critical Thinking', desc: 'التفكير النقدي', icon: 'fa-brain' }
         ];
 
-        // سكريبت الخلفية التفاعلية (Canvas Particles & Interactive Lines)
+        // سكريبت الخلفية التفاعلية الهادئة
         const canvas = document.getElementById('interactiveCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -407,8 +419,8 @@
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.8;
-                this.vy = (Math.random() - 0.5) * 0.8;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
                 this.radius = Math.random() * 2 + 1;
             }
             update() {
@@ -418,7 +430,7 @@
                 if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
             }
             draw() {
-                ctx.fillStyle = document.documentElement.classList.contains('light') ? 'rgba(99, 102, 241, 0.3)' : 'rgba(129, 140, 248, 0.4)';
+                ctx.fillStyle = document.documentElement.classList.contains('light') ? 'rgba(184, 134, 11, 0.25)' : 'rgba(212, 175, 55, 0.3)';
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fill();
@@ -427,7 +439,7 @@
 
         function initParticles() {
             particles = [];
-            let count = Math.floor((canvas.width * canvas.height) / 12000);
+            let count = Math.floor((canvas.width * canvas.height) / 14000);
             for (let i = 0; i < count; i++) particles.push(new Particle());
         }
         initParticles();
@@ -438,13 +450,12 @@
                 particles[i].update();
                 particles[i].draw();
 
-                // ربط الجزيئات بالخطوط التفاعلية بالقرب من الماوس
                 if (mouse.x !== null && mouse.y !== null) {
                     let dx = particles[i].x - mouse.x;
                     let dy = particles[i].y - mouse.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < mouse.radius) {
-                        ctx.strokeStyle = document.documentElement.classList.contains('light') ? `rgba(99, 102, 241, ${0.2 * (1 - dist/mouse.radius)})` : `rgba(129, 140, 248, ${0.3 * (1 - dist/mouse.radius)})`;
+                        ctx.strokeStyle = document.documentElement.classList.contains('light') ? `rgba(184, 134, 11, ${0.15 * (1 - dist/mouse.radius)})` : `rgba(212, 175, 55, ${0.25 * (1 - dist/mouse.radius)})`;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
@@ -470,7 +481,6 @@
             loadNoticeFromDatabase();
         }
 
-        // بناء السلايدات مع خاصية الفتح والطي عند النقر
         function buildSlidesStructure() {
             let container = document.getElementById('slidesContainer');
             container.innerHTML = "";
@@ -494,7 +504,7 @@
                     </div>
                     <div class="slide-content-body">
                         <div class="files-grid" id="grid_${sub.id}">
-                            <p style="color:#94a3b8; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>
+                            <p style="color:#b8a993; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>
                         </div>
                     </div>
                 `;
@@ -502,7 +512,6 @@
             });
         }
 
-        // دالة فتح وغلق السلايد بسلاسة
         function toggleSlide(subId) {
             let slide = document.getElementById('slide_' + subId);
             slide.classList.toggle('active');
@@ -560,7 +569,7 @@
             rtdb.ref('files').on('value', (snapshot) => {
                 subjects.forEach(sub => {
                     let grid = document.getElementById('grid_' + sub.id);
-                    if(grid) grid.innerHTML = `<p style="color:#94a3b8; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>`;
+                    if(grid) grid.innerHTML = `<p style="color:#b8a993; font-size:0.9rem; font-weight:600;">لا توجد ملفات مرفوعة لهذه المادة حتى الآن.</p>`;
                 });
 
                 let data = snapshot.val();
