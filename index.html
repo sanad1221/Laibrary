@@ -102,7 +102,7 @@
         .splash-video-bg {
             position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
             width: auto; height: auto; transform: translate(-50%, -50%);
-            object-fit: cover; z-index: -1; filter: brightness(0.45) contrast(1.1);
+            object-fit: cover; z-index: -1; filter: brightness(0.4) contrast(1.1);
         }
         .splash-content { text-align: center; padding: 0 20px; z-index: 2; }
         .splash-logo-icon {
@@ -290,11 +290,10 @@
     <div class="college-bg-overlay"></div>
     <canvas id="interactiveCanvas"></canvas>
 
-    <!-- شاشة الترحيب مع مشغل الفيديو المعدل -->
+    <!-- شاشة الترحيب مع فيديو الكلية الخاص بك -->
     <div id="splashScreen">
-        <video autoplay muted loop playsinline class="splash-video-bg" id="bgVideo">
-            <source src="https://raw.githubusercontent.com/sanad1221/Lalibrary/main/13241.mp4" type="video/mp4">
-            متصفحك لا يدعم تشغيل الفيديو
+        <video autoplay muted loop playsinline class="splash-video-bg">
+            <source src="WhatsApp Video 2026-10-03 at 9.21.31 PM.mp4" type="video/mp4">
         </video>
         <div class="splash-content">
             <div class="splash-logo-icon"><i class="fa-solid fa-university"></i></div>
@@ -306,7 +305,7 @@
 
     <div id="mainApp" style="opacity: 0; visibility: hidden;">
         <div class="top-bar">
-            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#d4af37;"></i> الزيارات النشطة: <span id="visitCount">3,120</span></div>
+            <div class="stats-badge"><i class="fa-solid fa-eye" style="color:#d4af37;"></i> الزيارات النشطة: <span id="visitCount">3,620</span></div>
             <div class="actions-top">
                 <button class="btn-refresh" onclick="loadFilesFromDatabase()"><i class="fa-solid fa-rotate"></i> تحديث</button>
                 <button class="theme-toggle-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
